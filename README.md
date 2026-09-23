@@ -31,7 +31,7 @@ pnpm db:ping
 pnpm db:seed
 ```
 
-There are no tables yet. Setup, migrations, and the server boundary are documented in [docs/development/database.md](docs/development/database.md).
+The first table is `profiles`. There is no catalog yet. Setup, migrations, and the server boundary are documented in [docs/development/database.md](docs/development/database.md). Roles and `changeRole` live in `packages/domain`. The current slice is the authorization kernel; see [docs/roadmap.md](docs/roadmap.md).
 
 ## Layout
 

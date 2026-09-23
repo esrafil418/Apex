@@ -23,7 +23,7 @@ Use Drizzle ORM with the `postgres` driver (postgres.js).
 - Supabase is the hosted Postgres provider. The app does not query through PostgREST or `supabase-js`.
 - `@apex/database` imports `server-only`. Server code reaches it through `apps/web/server/db.ts`.
 
-There are no tables in this phase. The schema module is the place the first feature will add them. Domain types are not Drizzle row types.
+`profiles` is the first table. Domain types are not Drizzle row types. Mapping happens in `packages/database/src/profile.ts`.
 
 ## Alternatives considered
 
@@ -58,7 +58,7 @@ The current connection uses the database owner role. On Supabase that role bypas
 - The first persisted feature adds tables under `packages/database/src/schema`, generates a migration, and maps rows to domain types at the database boundary.
 - Checkout, inventory, and other concurrent writes use `database.transaction()` on this client, plus Postgres constraints and row locks. There is no transaction wrapper.
 - Row level security policies will be SQL in `packages/database/migrations`, committed with the table they protect.
-- Authenticated identity will enter a user-scoped session later, inside a transaction that sets the Postgres role and request claims. That helper does not exist yet.
+- User-scoped identity enters `withUser`, which sets `app.user_id` and `SET LOCAL ROLE apex_app`. See [0003](0003-application-authorization-and-row-level-security.md).
 - The owner connection stays server-only and is reserved for trusted server work.
 - Replacing Supabase with another Postgres host means changing connection strings and the future auth provider. Queries stay Drizzle SQL against Postgres.
 - `supabase-js` is not a dependency. It arrives with Auth or Storage, if those features need the Supabase APIs.

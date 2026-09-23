@@ -17,8 +17,8 @@ const globalForDatabase = globalThis as typeof globalThis & {
 
 /**
  * Server-side Postgres client. The connection uses DATABASE_URL, which is the
- * database owner role on Supabase and bypasses row level security. User-scoped
- * enforcement arrives with authentication.
+ * database owner role and bypasses row level security. Keep this pool for
+ * migrations, seeds, and trusted jobs. User-scoped reads go through withUser.
  */
 export function getDatabase(): Database {
   const existing = globalForDatabase.__apexDatabase;

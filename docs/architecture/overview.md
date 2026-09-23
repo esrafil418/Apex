@@ -34,6 +34,8 @@ Domain code does not import React, Next.js, Supabase, Prisma, Drizzle, Cloudinar
 | Shared visual components | `packages/ui` |
 | Shared non-domain contracts | `packages/types` |
 | Input schemas | `packages/validation` |
+| Roles, profiles, `changeRole` | `packages/domain` |
+| User-scoped SQL (`withUser`, RLS) | `packages/database` |
 
 Server-side validation and authorization stay on the server. Client state is not the source of truth for security-sensitive data.
 
@@ -42,6 +44,8 @@ Server-side validation and authorization stay on the server. Client state is not
 `packages/database` holds the Drizzle client, the schema module, SQL migrations, and the seed entry. Supabase hosts Postgres. The app does not query through the Supabase client. Details are in [database.md](database.md). The decision is [0002](../decisions/0002-drizzle-postgresql.md).
 
 `apps/web` reaches the client through `apps/web/server/db.ts`. That entry is server-only. `DATABASE_URL` and `DIRECT_URL` are server environment variables.
+
+Authorization is two layers: domain rules and row level security. Policies apply only inside `withUser`. The owner pool bypasses them. See [authorization.md](authorization.md) and [0003](../decisions/0003-application-authorization-and-row-level-security.md).
 
 ## Not abstracted yet
 

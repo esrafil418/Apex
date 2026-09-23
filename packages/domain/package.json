@@ -7,9 +7,11 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/role.test.ts src/change-role.test.ts src/package-boundary.test.ts"
   },
   "devDependencies": {
+    "tsx": "^4.23.15",
     "typescript": "catalog:"
   }
 }

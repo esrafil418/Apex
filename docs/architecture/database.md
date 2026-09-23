@@ -8,13 +8,15 @@ Postgres access lives in `@apex/database`. Supabase hosts that Postgres. The que
 | --- | --- |
 | Server entry | `packages/database/src/index.ts` |
 | Client and `select 1` ping | `packages/database/src/client.ts` |
+| User-scoped transaction | `packages/database/src/with-user.ts` |
 | Env parsing | `packages/database/src/env.ts` |
 | Schema source | `packages/database/src/schema` |
+| Profile row mapper | `packages/database/src/profile.ts` |
 | SQL migrations | `packages/database/migrations` |
 | Seed entry | `packages/database/src/seed.ts` |
 | App import path | `apps/web/server/db.ts` |
 
-The schema module has no tables. No commerce data is stored yet.
+The first table is `profiles`. There is no product, cart, or order schema.
 
 ## Dependency direction
 
@@ -40,19 +42,20 @@ That URL is the database owner on Supabase. The owner bypasses row level securit
 
 ## Transactions
 
-Multi-statement work calls `getDatabase().transaction()`. The seed entry already opens one transaction and inserts nothing. Inventory decrements, checkout, and payment writes will use the same method when those features exist. Isolation and row locks will be chosen in that feature, next to the SQL that needs them.
+Trusted multi-statement work calls `getDatabase().transaction()`. User-scoped work calls `withUser`, which opens a transaction, sets `app.user_id`, then `SET LOCAL ROLE apex_app`. Inventory decrements, checkout, and payment writes will use a transaction when those features exist. Isolation and row locks will be chosen in that feature, next to the SQL that needs them.
 
 ## Row level security
 
-No policies are installed. The architecture leaves room for them:
+Policies exist on `profiles`. They apply only inside `withUser`.
 
-- Policies are SQL migrations in `packages/database/migrations`, committed with the table change.
-- Application authorization stays in server-side use cases. It decides whether the current request may perform an operation.
-- Database authorization is row level security. It still applies when a query runs as the authenticated database role, including a query the application did not intend.
-- The owner connection used today bypasses those policies. Trusted server jobs keep using it. It never ships to the browser.
-- When authentication exists, a user-scoped query will run inside a transaction on a non-owner role and set the request claims Supabase policies read (`auth.uid()`). That session helper is not implemented.
+- Policies and helpers are hand-written SQL in `packages/database/migrations`, committed with the table they protect. Drizzle does not generate them.
+- Application authorization stays in `packages/domain`. `changeRole` decides whether a role assignment is allowed.
+- Database authorization is row level security. It still applies to a query the application did not intend, once that query runs as `apex_app`.
+- `getDatabase()` is the owner pool. It bypasses those policies. Migrations, seeds, and the future first-login insert use it. It never ships to the browser.
+- `withUser` is the user-scoped path. It does not read cookies or headers. Policies call `app.current_user_id()`, not `auth.uid()`.
+- `apex_app` cannot insert or delete profiles. Profile creation is a trusted owner path in the login slice.
 
-Application checks and row level security will both exist. One does not replace the other.
+Application checks and row level security both exist. One does not replace the other. A policy on the owner connection would not protect a request.
 
 ## Supabase
 
@@ -62,6 +65,6 @@ Another Postgres host can replace Supabase by changing `DATABASE_URL` and `DIREC
 
 ## Testing
 
-`packages/database` unit tests cover env parsing and do not open a connection. Domain tests, when they exist, stay database-free.
+`packages/database` unit tests cover env parsing and uuid checks for `withUser`. They do not open a connection. Domain tests stay database-free.
 
-Integration tests will run against PostgreSQL, using a dedicated test database and the seed entry or a transaction that rolls back. That harness is not built. CI runs `pnpm test` and `pnpm db:check` without a database URL.
+The profiles integration test talks to PostgreSQL when `DATABASE_URL` is set and skips otherwise. CI has no database URL, so that test stays skipped. It is not pointed at production.

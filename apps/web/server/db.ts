@@ -3,4 +3,4 @@
  * route handlers, and server actions. The package entry loads server-only,
  * so a client component cannot import it.
  */
-export { closeDatabase, getDatabase, pingDatabase } from "@apex/database";
+export { closeDatabase, getDatabase, pingDatabase, withUser } from "@apex/database";

@@ -1,6 +1,5 @@
 /**
- * Drizzle table definitions. A feature adds its tables in this folder when it
- * first persists data. Domain types stay in @apex/domain; this module does not
- * import them.
+ * Drizzle table definitions. Domain types stay in @apex/domain; this module
+ * does not import them. Row mapping lives next to the table, outside this file.
  */
-export {};
+export { profiles } from "./profiles";

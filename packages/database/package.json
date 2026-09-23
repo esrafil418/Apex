@@ -8,7 +8,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/env.test.ts",
+    "test": "tsx --test src/env.test.ts src/with-user.test.ts src/profiles.integration.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:check": "drizzle-kit check",
     "db:migrate": "tsx src/cli.ts assert && drizzle-kit migrate",

@@ -17,19 +17,28 @@ From the repository root:
 | `pnpm db:migrate` | Applies committed migrations with `DIRECT_URL` or `DATABASE_URL` | Yes |
 | `pnpm db:ping` | Runs `select 1` | Yes |
 | `pnpm db:seed` | Opens one transaction. No fixtures are inserted yet | Yes |
-| `pnpm --filter @apex/database test` | Runs env-parser unit tests | No |
+| `pnpm --filter @apex/database test` | Env parser, `withUser` uuid check, and the profiles integration test | Integration test only |
+| `pnpm --filter @apex/domain test` | Role and `changeRole` unit tests | No |
 
-`pnpm test` runs the same unit tests through Turborepo.
+`pnpm test` runs those scripts through Turborepo. The profiles integration test skips when `DATABASE_URL` is unset, so CI stays green.
+
+To run the integration test locally, point `DATABASE_URL` at a development Postgres, never a production project. Apply migrations, then run the database tests:
+
+```bash
+pnpm db:migrate
+pnpm --filter @apex/database test
+```
 
 ## Adding a table
 
 1. Add the Drizzle table under `packages/database/src/schema`.
 2. Run `pnpm db:generate` and review the SQL in `packages/database/migrations`.
-3. Commit the schema change and the generated migration together.
-4. Run `pnpm db:migrate` against the development database.
-5. Map the row to a domain type inside `packages/database` when the feature reads or writes it.
+3. If the table needs policies, roles, functions, or triggers, create a second migration with `pnpm --filter @apex/database exec drizzle-kit generate --custom --name <name>` and write that SQL by hand. Policies and helpers live in `packages/database/migrations` and are reviewed in the same change as the table they protect.
+4. Commit the schema change, the generated table migration, and the hand-written security migration together.
+5. Run `pnpm db:migrate` against the development database.
+6. Map the row to a domain type inside `packages/database` when the feature reads or writes it.
 
-Do not edit an applied migration. Add a new migration instead. Do not use `drizzle-kit push` as the project history; push skips the migration files.
+Do not edit an applied migration. Add a new migration instead. Do not use `drizzle-kit push` as the project history; push skips the migration files. Do not edit a generated table migration after it is correct.
 
 ## Reset a development database
 
