@@ -12,7 +12,7 @@ Apex needs one place to serve the storefront and handle HTTP. A second backend p
 
 `apps/web` is the only application runtime. It owns routing, server rendering, and request handlers. Business rules live in `packages/domain` and use cases live in `packages/application`. Those packages do not import Next.js.
 
-PostgreSQL is reached through Supabase later, from `packages/database` and `packages/infrastructure`, behind the application boundary.
+PostgreSQL is hosted by Supabase and accessed from `packages/database`. See [0002](0002-drizzle-postgresql.md).
 
 ## Consequences
 

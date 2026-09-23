@@ -9,7 +9,13 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "db:generate": "pnpm --filter @apex/database db:generate",
+    "db:check": "pnpm --filter @apex/database db:check",
+    "db:migrate": "pnpm --filter @apex/database db:migrate",
+    "db:ping": "pnpm --filter @apex/database db:ping",
+    "db:seed": "pnpm --filter @apex/database db:seed"
   },
   "devDependencies": {
     "turbo": "^2.11.3",

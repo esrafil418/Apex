@@ -1,6 +1,6 @@
 # Apex
 
-Apex is a production-oriented commerce platform. This repository is the monorepo foundation: one Next.js application and empty packages with a fixed dependency direction.
+Apex is a production-oriented commerce platform. This repository is a pnpm and Turborepo monorepo. The Next.js app is the only runtime, and Postgres access lives in `packages/database`.
 
 ## Requirements
 
@@ -13,10 +13,25 @@ Apex is a production-oriented commerce platform. This repository is the monorepo
 pnpm install
 pnpm dev
 pnpm typecheck
+pnpm test
 pnpm build
 ```
 
 `pnpm dev` starts the Next.js app in `apps/web`.
+
+## Database
+
+Copy `.env.example` to `.env.local` in the repository root. `DATABASE_URL` and `DIRECT_URL` are server-only.
+
+```bash
+pnpm db:generate
+pnpm db:check
+pnpm db:migrate
+pnpm db:ping
+pnpm db:seed
+```
+
+There are no tables yet. Setup, migrations, and the server boundary are documented in [docs/development/database.md](docs/development/database.md).
 
 ## Layout
 
@@ -25,7 +40,7 @@ apps/web          Next.js application (UI and HTTP)
 packages/domain   Business rules, no frameworks
 packages/application
 packages/infrastructure
-packages/database
+packages/database  Postgres client, schema, and migrations
 packages/ui
 packages/types
 packages/validation

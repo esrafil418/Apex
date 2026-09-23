@@ -37,6 +37,12 @@ Domain code does not import React, Next.js, Supabase, Prisma, Drizzle, Cloudinar
 
 Server-side validation and authorization stay on the server. Client state is not the source of truth for security-sensitive data.
 
+## Database
+
+`packages/database` holds the Drizzle client, the schema module, SQL migrations, and the seed entry. Supabase hosts Postgres. The app does not query through the Supabase client. Details are in [database.md](database.md). The decision is [0002](../decisions/0002-drizzle-postgresql.md).
+
+`apps/web` reaches the client through `apps/web/server/db.ts`. That entry is server-only. `DATABASE_URL` and `DIRECT_URL` are server environment variables.
+
 ## Not abstracted yet
 
-No repository interfaces, event bus, dependency-injection container, or provider SDK until a feature needs them. Package boundaries are the abstraction.
+No repository interfaces, event bus, or dependency-injection container. Drizzle is the Postgres library. Supabase Auth, Stripe, and other provider SDKs wait until a feature calls them. Package boundaries are the abstraction.

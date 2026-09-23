@@ -1,4 +1,6 @@
-/**
- * Persistence adapter. Schemas and queries arrive with the first feature that stores data.
- */
-export {};
+import "server-only";
+
+export { closeDatabase, getDatabase, pingDatabase } from "./client";
+export type { Database } from "./client";
+export { DatabaseEnvError, readDatabaseEnv } from "./env";
+export type { DatabaseEnv } from "./env";

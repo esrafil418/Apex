@@ -9,6 +9,8 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@apex/database": "workspace:*",
+    "@next/env": "16.3.6",
     "next": "^16.3.6",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
